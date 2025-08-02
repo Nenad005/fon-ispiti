@@ -70,7 +70,7 @@ export default function AddButton(){
                         </SelectTrigger>
                         <SelectContent>
                             {Object.keys(data).map((key: string) => {
-                                return <SelectItem value={key}>{key}</SelectItem>
+                                return <SelectItem value={key} key={key}>{key}</SelectItem>
                             })}
                         </SelectContent>
                     </Select>
@@ -88,7 +88,7 @@ export default function AddButton(){
                         </SelectTrigger>
                         <SelectContent>
                             {Object.keys(examData[examType]).map((key: string) => {
-                                return <SelectItem value={key}>{key}</SelectItem>
+                                return <SelectItem value={key} key={key}>{key}</SelectItem>
                             })}
                         </SelectContent>
                     </Select>
@@ -100,7 +100,7 @@ export default function AddButton(){
                         </SelectTrigger>
                         <SelectContent>
                             {examSemester && Object.keys(examData[examType][examSemester]).map((key : string) => {
-                                return <SelectItem value={key}>{key}</SelectItem>
+                                return <SelectItem value={key} key={key}>{key}</SelectItem>
                             })}
                         </SelectContent>
                     </Select>

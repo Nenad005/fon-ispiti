@@ -28,88 +28,88 @@ import {
 } from "@/components/ui/table"
 import { useEffect } from "react"
 
-const dataMock: Exam[] = [
-    {
-        id: "Matematika 1P",
-        subject: "Matematika 1",
-        type: "P"
-    },
-    {
-        id: "Matematika 1U",
-        subject: "Matematika 1",
-        type: "U"
-    },
-    {
-        id: "Principi ProgramiranjaU",
-        subject: "Principi Programiranja",
-        type: "U"
-    },
-    {
-        id: "Matematika 2P",
-        subject: "Matematika 2",
-        type: "P"
-    },
-    {
-        id: "Matematika 2U",
-        subject: "Matematika 2",
-        type: "U"
-    },
-    {
-        id: "Principi ProgramiranjaP",
-        subject: "Principi Programiranja",
-        type: "P"
-    },
-    {
-        id: "Osnovi ElektrotehnikeP",
-        subject: "Osnovi Elektrotehnike",
-        type: "P"
-    },
-    {
-        id: "Osnovi ElektrotehnikeU",
-        subject: "Osnovi Elektrotehnike",
-        type: "U"
-    },
-    {
-        id: "FizikaP",
-        subject: "Fizika",
-        type: "P"
-    },
-    {
-        id: "FizikaU",
-        subject: "Fizika",
-        type: "U"
-    },
-    {
-        id: "Algoritmi i Strukture PodatakaP",
-        subject: "Algoritmi i Strukture Podataka",
-        type: "P"
-    },
-    {
-        id: "Algoritmi i Strukture PodatakaU",
-        subject: "Algoritmi i Strukture Podataka",
-        type: "U"
-    },
-    {
-        id: "Matematika 3P",
-        subject: "Matematika 3",
-        type: "P"
-    },
-    {
-        id: "Matematika 3U",
-        subject: "Matematika 3",
-        type: "U"
-    },
-    {
-        id: "Baze PodatakaP",
-        subject: "Baze Podataka",
-        type: "P"
-    },
-    {
-        id: "Baze PodatakaU",
-        subject: "Baze Podataka",
-        type: "U"
-    }
-]
+// const dataMock: Exam[] = [
+//     {
+//         id: "Matematika 1P",
+//         subject: "Matematika 1",
+//         type: "P"
+//     },
+//     {
+//         id: "Matematika 1U",
+//         subject: "Matematika 1",
+//         type: "U"
+//     },
+//     {
+//         id: "Principi ProgramiranjaU",
+//         subject: "Principi Programiranja",
+//         type: "U"
+//     },
+//     {
+//         id: "Matematika 2P",
+//         subject: "Matematika 2",
+//         type: "P"
+//     },
+//     {
+//         id: "Matematika 2U",
+//         subject: "Matematika 2",
+//         type: "U"
+//     },
+//     {
+//         id: "Principi ProgramiranjaP",
+//         subject: "Principi Programiranja",
+//         type: "P"
+//     },
+//     {
+//         id: "Osnovi ElektrotehnikeP",
+//         subject: "Osnovi Elektrotehnike",
+//         type: "P"
+//     },
+//     {
+//         id: "Osnovi ElektrotehnikeU",
+//         subject: "Osnovi Elektrotehnike",
+//         type: "U"
+//     },
+//     {
+//         id: "FizikaP",
+//         subject: "Fizika",
+//         type: "P"
+//     },
+//     {
+//         id: "FizikaU",
+//         subject: "Fizika",
+//         type: "U"
+//     },
+//     {
+//         id: "Algoritmi i Strukture PodatakaP",
+//         subject: "Algoritmi i Strukture Podataka",
+//         type: "P"
+//     },
+//     {
+//         id: "Algoritmi i Strukture PodatakaU",
+//         subject: "Algoritmi i Strukture Podataka",
+//         type: "U"
+//     },
+//     {
+//         id: "Matematika 3P",
+//         subject: "Matematika 3",
+//         type: "P"
+//     },
+//     {
+//         id: "Matematika 3U",
+//         subject: "Matematika 3",
+//         type: "U"
+//     },
+//     {
+//         id: "Baze PodatakaP",
+//         subject: "Baze Podataka",
+//         type: "P"
+//     },
+//     {
+//         id: "Baze PodatakaU",
+//         subject: "Baze Podataka",
+//         type: "U"
+//     }
+// ]
 
 export type Exam = {
     id: string
@@ -172,7 +172,7 @@ export const columns: ColumnDef<Exam>[] = [
     },
 ]
 
-export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exam[], rowSelection: {}, setRowSelection: React.Dispatch<React.SetStateAction<{}>>}) {
+export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exam[], rowSelection: any, setRowSelection: React.Dispatch<React.SetStateAction<{}>>}) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []

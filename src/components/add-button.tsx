@@ -106,7 +106,7 @@ export default function AddButton(){
                     </Select>
 
                     <Label>Izaberi predmet</Label>
-                    <DataTableDemo rowSelection={rowSelection} setRowSelection={setRowSelection} data={(examSemester && examPeriod) ? getTableData(examData[examType][examSemester][examPeriod].termini) : []}/>
+                    <DataTableDemo key={`table-${examSemester}-${examPeriod}`} rowSelection={rowSelection} setRowSelection={setRowSelection} data={(examSemester && examPeriod) ? getTableData(examData[examType][examSemester][examPeriod].termini) : []}/>
                     <Button variant={"outline"} onClick={() => {console.log(rowSelection)}}>Test</Button>
                 </div>
             </DialogContent>

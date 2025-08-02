@@ -8,6 +8,6 @@ export async function GET() {
     const content = await fs.readFile(filePath, 'utf-8');
     return new Response(content, { status: 200 });
   } catch (err) {
-    return new Response('Greška: fajl nije pronađen.', { status: 404 });
+    return new Response('Greška: fajl nije pronađen.' + err, { status: 404 });
   }
 }

@@ -35,7 +35,7 @@ async function FonLinkovi(html : string) : Promise<PDFLink[]> {
   const results : PDFLink[] = [];
   
   pdfLinks.forEach(link => {
-    let parent = link.closest(".elementor-column"); // nađeš kolonu u kojoj se nalazi link
+    const parent = link.closest(".elementor-column"); // nađeš kolonu u kojoj se nalazi link
     if (!parent) return;
     
     // tražimo najbliži h2 unutar te kolone
@@ -61,8 +61,8 @@ interface Termin {
 }
 
 function textToData(pdfText: string, print: boolean = false) : Termin[] {
-  let regex = /\d{2}-\d{2}-\d{4}.*\d{2}:\d{2}.*\d{2}:\d{2}/
-  let termini: Termin[] = []
+  const regex = /\d{2}-\d{2}-\d{4}.*\d{2}:\d{2}.*\d{2}:\d{2}/
+  const termini: Termin[] = []
 
   let linije = pdfText.split("\n")
   if (print) console.log(linije)

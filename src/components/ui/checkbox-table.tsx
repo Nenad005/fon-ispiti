@@ -172,7 +172,7 @@ export const columns: ColumnDef<Exam>[] = [
     },
 ]
 
-export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exam[], rowSelection: any, setRowSelection: React.Dispatch<React.SetStateAction<{}>>}) {
+export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exam[], rowSelection: any, setRowSelection: React.Dispatch<React.SetStateAction<any>>}) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []

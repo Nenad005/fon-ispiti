@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const selectedExamsAtom = atom<Record<string, string[]>>({});
+export const examsAtom = atom<Array<any>>([]);

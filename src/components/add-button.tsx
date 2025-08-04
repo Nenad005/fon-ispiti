@@ -10,23 +10,33 @@ import { SelectItem, Select, SelectContent, SelectTrigger } from "./ui/select";
 // import dataJSON from "@/../data/response.json"
 // import { ExamData, ExamTerm } from "@/lib/types";
 // import { DataTableDemo, Exam } from "./ui/checkbox-table";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import SubjectTable from "./subject-table";
+import { useAtom } from "jotai";
+import { examsAtom } from "@/app/state/selectedExamsAtom";
+import { getBaseUrl } from "@/lib/utils";
 
 // const examData: ExamData = dataJSON;
 
 async function getPeriods() {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/data/periods`)
+    const response = await fetch(`${getBaseUrl()}/api/data/periods`)
+
+    if (!response.ok) {
+        console.error("Failed to fetch data:", await response.text())  // logs raw HTML if it's an error
+        throw new Error("Failed to fetch data")
+    }
+
     return await response.json()
 }
 
 export default function AddButton() {
-    const {data, isPending, isError} = useSuspenseQuery({ queryKey: ["periods"], queryFn: getPeriods })
+    const {data, isPending, isError} = useQuery({ queryKey: ["periods"], queryFn: getPeriods })
     const [isOpen, setIsOpen] = useState(false)
     const [examType, setExamType] = useState<undefined | string>(undefined)
     const [examSemester, setExamSemester] = useState<undefined | string>(undefined)
     const [examPeriod, setExamPeriod] = useState<undefined | string>(undefined)
     const [selectedExams, setSelectedExams] = useState<Array<any>>([])
+    const [exams, setExams] = useAtom(examsAtom)
 
     return <>
         <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open) }}>
@@ -98,6 +108,13 @@ export default function AddButton() {
                             <SubjectTable key={examPeriod} idexamPeriod={examPeriod} setSelectedExams={setSelectedExams}></SubjectTable>
                         </>}
                         <Button disabled={!examPeriod || selectedExams.length == 0} onClick={() => {
+                            const newExams = selectedExams.map((exam) => {
+                                return {
+                                    ...exam,
+                                    period: null
+                                }
+                            })
+                            setExams(exams.concat(newExams))
                             setIsOpen(false)
                             console.log(selectedExams)
                         }}>Dodaj</Button>

@@ -28,93 +28,11 @@ import {
 } from "@/components/ui/table"
 import { useEffect } from "react"
 
-// const dataMock: Exam[] = [
-//     {
-//         id: "Matematika 1P",
-//         subject: "Matematika 1",
-//         type: "P"
-//     },
-//     {
-//         id: "Matematika 1U",
-//         subject: "Matematika 1",
-//         type: "U"
-//     },
-//     {
-//         id: "Principi ProgramiranjaU",
-//         subject: "Principi Programiranja",
-//         type: "U"
-//     },
-//     {
-//         id: "Matematika 2P",
-//         subject: "Matematika 2",
-//         type: "P"
-//     },
-//     {
-//         id: "Matematika 2U",
-//         subject: "Matematika 2",
-//         type: "U"
-//     },
-//     {
-//         id: "Principi ProgramiranjaP",
-//         subject: "Principi Programiranja",
-//         type: "P"
-//     },
-//     {
-//         id: "Osnovi ElektrotehnikeP",
-//         subject: "Osnovi Elektrotehnike",
-//         type: "P"
-//     },
-//     {
-//         id: "Osnovi ElektrotehnikeU",
-//         subject: "Osnovi Elektrotehnike",
-//         type: "U"
-//     },
-//     {
-//         id: "FizikaP",
-//         subject: "Fizika",
-//         type: "P"
-//     },
-//     {
-//         id: "FizikaU",
-//         subject: "Fizika",
-//         type: "U"
-//     },
-//     {
-//         id: "Algoritmi i Strukture PodatakaP",
-//         subject: "Algoritmi i Strukture Podataka",
-//         type: "P"
-//     },
-//     {
-//         id: "Algoritmi i Strukture PodatakaU",
-//         subject: "Algoritmi i Strukture Podataka",
-//         type: "U"
-//     },
-//     {
-//         id: "Matematika 3P",
-//         subject: "Matematika 3",
-//         type: "P"
-//     },
-//     {
-//         id: "Matematika 3U",
-//         subject: "Matematika 3",
-//         type: "U"
-//     },
-//     {
-//         id: "Baze PodatakaP",
-//         subject: "Baze Podataka",
-//         type: "P"
-//     },
-//     {
-//         id: "Baze PodatakaU",
-//         subject: "Baze Podataka",
-//         type: "U"
-//     }
-// ]
-
 export type Exam = {
-    id: string
-    subject: string
-    type: string
+    idexamSubject: string
+    subjectName: string
+    type: string,
+    examPeriodId: string
 }
 
 export const columns: ColumnDef<Exam>[] = [
@@ -145,7 +63,7 @@ export const columns: ColumnDef<Exam>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "subject",
+        accessorKey: "subjectName",
         header: ({column}) => <Button 
             variant={"ghost"} 
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -154,7 +72,7 @@ export const columns: ColumnDef<Exam>[] = [
                 <ArrowUpDown/>
             </Button>,
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("subject")}</div>
+            <div className="capitalize">{row.getValue("subjectName")}</div>
         ),
     },
     {
@@ -172,19 +90,26 @@ export const columns: ColumnDef<Exam>[] = [
     },
 ]
 
-export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exam[], rowSelection: any, setRowSelection: React.Dispatch<React.SetStateAction<any>>}) {
+export function DataTableDemo({setRowSelectionData, data} : {data: Exam[], setRowSelectionData: React.Dispatch<React.SetStateAction<any>>}) {
     const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    )
+    const [rowSelection, setRowSelection] = React.useState({})
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
     // const [rowSelection, setRowSelection] = React.useState({})
 
+    function handleRowSelectionChange(updater: any) {
+        const newValue = typeof updater === "function" ? updater(rowSelection) : updater
+
+        const rowSelectionData = Object.keys(newValue).map((key) => data[Number(key)])
+
+        setRowSelection(newValue)
+        setRowSelectionData(rowSelectionData)
+    }
+
     const table = useReactTable({
         data: data,
         columns,
-        paginateExpandedRows: false,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
@@ -192,7 +117,7 @@ export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exa
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,
+        onRowSelectionChange: handleRowSelectionChange,
         state: {
             sorting,
             columnFilters,
@@ -207,23 +132,23 @@ export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exa
     })
 
     useEffect(() => {
-        // table.setPageSize(table.getPreFilteredRowModel().rows.length)
+        setRowSelectionData([])
     }, [])
 
     return (
         <div className="w-full relative">
             {/* <Button onClick={() => {console.log(rowSelection)}}></Button> */}
-            <div className="flex items-center py-4">
+            <div className="flex items-center pb-4">
                 <Input
-                    placeholder="Filtriraj ispite..."
-                    value={(table.getColumn("subject")?.getFilterValue() as string) ?? ""}
+                    placeholder="Pretraži ispite..."
+                    value={(table.getColumn("subjectName")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
-                        table.getColumn("subject")?.setFilterValue(event.target.value)
+                        table.getColumn("subjectName")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
             </div>
-            <div className="overflow-hidden rounded-md border">
+            <div className="overflow-hidden w-full rounded-md border">
                 <Table>
                     <TableHeader className="sticky">
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -276,7 +201,7 @@ export function DataTableDemo({rowSelection, setRowSelection, data} : {data: Exa
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="text-muted-foreground flex-1 text-sm">
                     {table.getSelectedRowModel().rows.length} od{" "}
-                    {table.getPreFilteredRowModel().rows.length} ispit(a) izabran(o).
+                    {table.getPreFilteredRowModel().rows.length} ispit(a) izabran(a).
                 </div>
             </div>
         </div>

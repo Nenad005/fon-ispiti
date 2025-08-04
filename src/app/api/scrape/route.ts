@@ -4,6 +4,7 @@ import axios from "axios";
 import pdf from "pdf-parse";
 import fs from 'fs/promises';
 import path from 'path';
+import db from "@/lib/db/db";
 
 async function fetchAndExtractPdfText(url: string): Promise<string> {
   try {
@@ -91,7 +92,7 @@ function textToData(pdfText: string, print: boolean = false) : Termin[] {
     if (print) console.log(datum, predmet, tip_ispita, OD, DO)
 
     termini.push({
-      predmet: predmet,
+      predmet: predmet.trim(),
       tip: tip_ispita,
       datum: datum,
       od: OD,
@@ -103,13 +104,13 @@ function textToData(pdfText: string, print: boolean = false) : Termin[] {
   return termini
 }
 
-export async function GET() {
+async function fetchData() {
   let dataKLK = await fetch("https://oas.fon.bg.ac.rs/raspored-kolokvijuma")
-  if (dataKLK == null) return NextResponse.json({poruke: "greska sa fetchiovanjem KLK"}, {status: 201})
+  if (dataKLK == null) return null
     const textKLK = await dataKLK.text();
   
   let dataISP = await fetch("https://oas.fon.bg.ac.rs/raspored-ispita")
-  if (dataISP == null) return NextResponse.json({poruke: "greska sa fetchiovanjem KLK"}, {status: 201})
+  if (dataISP == null) return null
     const textISP = await dataISP.text();
 
   const linkoviKLK = await FonLinkovi(textKLK)
@@ -123,7 +124,7 @@ export async function GET() {
     const text = await fetchAndExtractPdfText(linkoviISP[i].url)
     const termini = textToData(text)
 
-    let ime : string = linkoviISP[i]?.text ?? "nema ime";
+    let ime : string = linkoviISP[i]?.text?.trim() ?? "nema ime";
     let isecenoIme = ime.split("-")[0].trim()
     let match = ime.match(/\d{2}.\d{2}.\d{4}/)
     let datum = match ? match.toString() : ""
@@ -140,7 +141,7 @@ export async function GET() {
     const text = await fetchAndExtractPdfText(linkoviKLK[i].url)
     const termini = textToData(text)
 
-    let ime : string = linkoviKLK[i]?.text ?? "nema ime";
+    let ime : string = linkoviKLK[i]?.text?.trim() ?? "nema ime";
     let isecenoIme = ime.split("-")[0].trim()
     let match = ime.match(/\d{2}.\d{2}.\d{4}/)
     let datum = match ? match.toString() : ""
@@ -152,16 +153,101 @@ export async function GET() {
     }
   }
 
-  let linkovi = {
+  let linkovi: { [key: string]: any } = {
     "KOLOKVIJUMI" : terminiKolokvijuma,
     "ISPITI" : terminiIspita
   }
 
-  const filePath = path.join(process.cwd(), 'data', 'response.json');
-  await fs.mkdir(path.dirname(filePath), { recursive: true }); // Kreiraj folder ako ne postoji
-  await fs.writeFile(filePath, JSON.stringify(linkovi, null, 2), 'utf-8');
+  return linkovi;
+}
+
+export async function GET() {
+  const data = await fetchData();
+  if (!data) return NextResponse.json({message: 'Doslo je do greske.'}, { status: 400 });
+  const tipovi = Object.keys(data);
+  await db.examTerm.deleteMany();
+  await db.examSubject.deleteMany();
+  await db.examPeriod.deleteMany();
+  await db.examSemester.deleteMany();
+  await db.examType.deleteMany();
+
+  // Step 2: Insert base examType
+  for (const tip of tipovi) {
+    const kolokvijumi = await db.examType.create({
+      data: { 
+        name: tip,
+        idexamType: tip
+      },
+    });
+
+    for (const [semesterName, periods] of Object.entries(data[tip])) {
+      const semester = await db.examSemester.create({
+        data: {
+          idexamSemester: `${tip}--${semesterName}`,
+          semesterName,
+          examType: {
+            connect: { idexamType: kolokvijumi.idexamType },
+          },
+        },
+      });
+
+      for (const [periodName, periodData] of Object.entries(periods as Record<string, any>)) {
+        const period = await db.examPeriod.create({
+          data: {
+            idexamPeriod: `${tip}--${semesterName}--${periodName}`,
+            periodName: periodName,
+            periodDate: periodData.datum,
+            periodUrl: periodData.url,
+            examSemester: {
+              connect: { idexamSemester: semester.idexamSemester },
+            },
+          },
+        });
+
+        const subjectMap: Record<string, any> = {};
+
+        for (const term of periodData.termini) {
+          if (term.predmet == "") continue;
+          const key = `${term.predmet}__${term.tip}`;
+          let subject = subjectMap[key];
+          // console.log(term)
+
+          if (!subject) {
+            subject = await db.examSubject.create({
+              data: {
+                // idexamSubject: term.predmet + term.tip + "--" + period.idexamPeriod,
+                idexamSubject: `${tip}--${semesterName}--${periodName}--${term.predmet}--${term.tip}`,
+                type: term.tip,
+                subjectName: term.predmet,
+                examPeriod: {
+                  connect: { idexamPeriod: period.idexamPeriod },
+                },
+              },
+            });
+            subjectMap[key] = subject;
+          }
+
+          const [day, month, year] = term.datum.split('-');
+          const date = new Date(`${year}-${month}-${day}`);
+
+          await db.examTerm.create({
+            data: {
+              od: term.od,
+              do: term.do,
+              datum: date,
+              examSubject: {
+                connect: {
+                  idexamSubject: subject.idexamSubject,
+                },
+              },
+            },
+          });
+        }
+      }
+    }
+  }
+
+  console.log('Database seeded successfully.');
 
   return  NextResponse.json({message: 'Podaci uspešno sačuvani.'}, { status: 200 });
-
-  // return NextResponse.json({linkovi: linkovi}, {status: 200})
 }

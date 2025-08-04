@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}>
         <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -37,7 +37,7 @@ export default function RootLayout({
           >
           <QueryProvider>
             <Header/>
-            <main>
+            <main className="min-h-full">
               {children}
             </main>
             <Footer></Footer>

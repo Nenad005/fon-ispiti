@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model examType {
+  idexamType    String         @id @default(cuid())
+  name          String
+  examSemesters examSemester[]
+}
+
+model examSemester {
+  idexamSemester String       @id @default(cuid())
+  semesterName   String
+  examTypeId     String
+  examType       examType     @relation(fields: [examTypeId], references: [idexamType])
+  examPeriods    examPeriod[]
+}
+
+model examPeriod {
+  idexamPeriod   String        @id @default(cuid())
+  periodName     String
+  periodUrl      String        @default("")
+  periodDate     String        @default("")
+  examSemesterId String
+  examSemester   examSemester  @relation(fields: [examSemesterId], references: [idexamSemester])
+  examSubjects   examSubject[]
+}
+
+model examSubject {
+  idexamSubject   String     @id // part of composite primary key
+  type            String
+  subjectName     String
+  examPeriodId    String
+  examPeriod      examPeriod @relation(fields: [examPeriodId], references: [idexamPeriod])
+  examTerms       examTerm[]
+}
+
+model examTerm {
+  idexamTerm    String      @id @default(cuid())
+  od            String
+  do            String
+  datum         DateTime    @db.Date
+  examSubjectId String
+  examSubject   examSubject @relation(fields: [examSubjectId], references: [idexamSubject])
+}

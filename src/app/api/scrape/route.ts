@@ -210,7 +210,7 @@ export async function GET() {
           if (term.predmet == "") continue;
           const key = `${term.predmet}__${term.tip}`;
           let subject = subjectMap[key];
-          // console.log(term)
+          console.log(term)
 
           if (!subject) {
             subject = await db.examSubject.create({

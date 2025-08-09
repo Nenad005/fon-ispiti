@@ -51,7 +51,7 @@ export const columns: ColumnDef<Exam>[] = [
             </div>
         ),
         cell: ({ row }) => (
-            <div className="flex justify-start items-center">
+            <div className="flex justify-start items-center w-4">
                 <Checkbox
                     checked={row.getIsSelected()}
                     onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -72,13 +72,13 @@ export const columns: ColumnDef<Exam>[] = [
                 <ArrowUpDown/>
             </Button>,
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("subjectName")}</div>
+            <div className="w-full max-w-full overflow-x-scroll">{row.getValue("subjectName")}</div>
         ),
     },
     {
         accessorKey: "type",
         header: () => <div className="text-right">Tip</div>,
-        cell: ({ row }) => <div className="flex flex-row justify-end">
+        cell: ({ row }) => <div className="flex flex-row justify-end ">
             <div className={`text-right w-6 h-6 font-semibold rounded-[50%] flex items-center justify-center
                 ${row.getValue("type") == "P" ? "bg-green-400" 
                 : row.getValue("type") == "U" ? "bg-blue-400"
@@ -136,9 +136,9 @@ export function DataTableDemo({setRowSelectionData, data} : {data: Exam[], setRo
     }, [])
 
     return (
-        <div className="w-full relative">
+        <div className="w-full relative overflow-x-hidden">
             {/* <Button onClick={() => {console.log(rowSelection)}}></Button> */}
-            <div className="flex items-center pb-4">
+            <div className="flex items-center py-2">
                 <Input
                     placeholder="Pretraži ispite..."
                     value={(table.getColumn("subjectName")?.getFilterValue() as string) ?? ""}
@@ -174,9 +174,10 @@ export function DataTableDemo({setRowSelectionData, data} : {data: Exam[], setRo
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    className=""
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className="">
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()

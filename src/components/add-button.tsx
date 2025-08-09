@@ -46,7 +46,7 @@ export default function AddButton() {
                     <LucidePlus />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] w-[90%]">
                 <DialogHeader>
                     <DialogTitle>Dodaj ispite</DialogTitle>
                 </DialogHeader>
@@ -55,7 +55,7 @@ export default function AddButton() {
                 </> : isError ? <>
                     <h1>GRESKA</h1>
                 </> : data && <>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 w-full max-w-full overflow-x-hidden">
                         <Label>Izaberi tip ispita</Label>
                         <Select key={`type`} value={examType} onValueChange={(type) => {
                             setExamSemester(undefined)
@@ -103,10 +103,10 @@ export default function AddButton() {
                             </SelectContent>
                         </Select>
                         
-                        {examPeriod && <>
+                        {examPeriod && <div className="w-full max-w-full flex flex-col overflow-x-hidden">
                             <Label>Izaberi predmet</Label>
                             <SubjectTable key={examPeriod} idexamPeriod={examPeriod} setSelectedExams={setSelectedExams}></SubjectTable>
-                        </>}
+                        </div>}
                         <Button disabled={!examPeriod || selectedExams.length == 0} onClick={() => {
                             const newExams = selectedExams.map((exam) => {
                                 return {

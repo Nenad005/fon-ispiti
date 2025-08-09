@@ -23,7 +23,7 @@ export default function SubjectTable({ idexamPeriod, setSelectedExams }: { idexa
         queryFn: getSubjects
     });
 
-    return <div>
+    return <div className="w-full overflow-x-hidden">
         {!isPending && !isError && data && <div>
             <DataTableDemo data={data} setRowSelectionData={setSelectedExams}></DataTableDemo>
         </div>}

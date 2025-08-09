@@ -3,7 +3,7 @@
 import { LucidePlus } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useState } from "react";
+import { useDebugValue, useEffect, useState } from "react";
 import { SelectValue } from "@radix-ui/react-select";
 import { Label } from "./ui/label";
 import { SelectItem, Select, SelectContent, SelectTrigger } from "./ui/select";
@@ -38,8 +38,79 @@ export default function AddButton() {
     const [selectedExams, setSelectedExams] = useState<Array<any>>([])
     const [exams, setExams] = useAtom(examsAtom)
 
+    function handleSaveSettings(){
+        const settingsDict = {
+            examType,
+            examSemester,
+            examPeriod,
+        }
+        window.localStorage.setItem('SETTINGS', JSON.stringify(settingsDict))
+        setIsOpen(false)
+    }
+
+    function handleAddExams(){
+        const newExams = selectedExams.map((exam) => {
+            return {
+                ...exam,
+                term: null
+            }
+        })
+        window.localStorage.setItem('EXAMS', JSON.stringify(exams.concat(newExams)))
+        setExams(exams.concat(newExams))
+        handleSaveSettings();
+        setIsOpen(false)
+    }
+
+    function handleOpenChange(open: any){
+        if (open){
+            const settings = window.localStorage.getItem('SETTINGS');
+            if (settings){
+                let settingsDict = JSON.parse(settings)
+                if (!isPending && !isError && data){
+                    console.log("ima podatke")
+                    if (Object.keys(data.dict).includes(settingsDict.examType)){
+                        console.log("ima tip")
+                        if (Object.keys(data.dict[settingsDict.examType].examSemesters).includes(settingsDict.examSemester)){
+                            console.log("ima semestar")
+                            if (Object.keys(data.dict[settingsDict.examType].examSemesters[settingsDict.examSemester].examPeriods).includes(settingsDict.examPeriod)){
+                                console.log("ima period")
+                            }
+                            else{
+                                settingsDict.examPeriod = undefined;
+                                window.localStorage.setItem('SETTINGS', JSON.stringify(settingsDict));
+                            }
+                        }
+                        else{
+                            settingsDict.examSemester = undefined;
+                            settingsDict.examPeriod = undefined;
+                            window.localStorage.setItem('SETTINGS', JSON.stringify(settingsDict));
+                        }
+                    }
+                    else{
+                        settingsDict.examType = undefined;
+                        settingsDict.examSemester = undefined;
+                        settingsDict.examPeriod = undefined;
+                        window.localStorage.setItem('SETTINGS', JSON.stringify(settingsDict));
+                    }
+                }
+                setExamType(settingsDict.examType)
+                setExamSemester(settingsDict.examSemester)
+                setExamPeriod(settingsDict.examPeriod)
+            }
+            else window.localStorage.setItem('SETTINGS', JSON.stringify({
+                examType,
+                examSemester,
+                examPeriod,
+            }))
+        }
+        else{
+            handleSaveSettings();
+        }
+        setIsOpen(open)
+    }
+
     return <>
-        <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open) }}>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant={"outline"} className="bg-green-300 hover:bg-green-500 transition-all cursor-pointer"
                     size={"icon"} onClick={() => setIsOpen(true)}>
@@ -51,6 +122,7 @@ export default function AddButton() {
                     <DialogTitle>Dodaj ispite</DialogTitle>
                 </DialogHeader>
                 {isPending ? <>
+                    {/* TODO UCITAVANJE */}
                     <h1>UCITAVANJE</h1> 
                 </> : isError ? <>
                     <h1>GRESKA</h1>
@@ -107,17 +179,7 @@ export default function AddButton() {
                             <Label>Izaberi predmet</Label>
                             <SubjectTable key={examPeriod} idexamPeriod={examPeriod} setSelectedExams={setSelectedExams}></SubjectTable>
                         </div>}
-                        <Button disabled={!examPeriod || selectedExams.length == 0} onClick={() => {
-                            const newExams = selectedExams.map((exam) => {
-                                return {
-                                    ...exam,
-                                    period: null
-                                }
-                            })
-                            setExams(exams.concat(newExams))
-                            setIsOpen(false)
-                            console.log(selectedExams)
-                        }}>Dodaj</Button>
+                        <Button disabled={!examPeriod || selectedExams.length == 0} onClick={handleAddExams}>Dodaj</Button>
                     </div>
                 </>}
             </DialogContent>

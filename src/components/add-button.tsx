@@ -180,6 +180,7 @@ export default function AddButton() {
                             <SubjectTable key={examPeriod} idexamPeriod={examPeriod} setSelectedExams={setSelectedExams}></SubjectTable>
                         </div>}
                         <Button disabled={!examPeriod || selectedExams.length == 0} onClick={handleAddExams}>Dodaj</Button>
+                        
                     </div>
                 </>}
             </DialogContent>

@@ -1,13 +1,21 @@
 "use client"
 import { Badge } from "./ui/badge"
-import { Clock, MapPin, Pen, Plus, Users } from "lucide-react"
+import { CalendarIcon, Clock, MapPin, Pen, Plus, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { Label } from "./ui/label"
 import { useState } from "react"
+import { format } from "date-fns"
+import { Button } from "./ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { Calendar } from "./ui/calendar"
+import { Input } from "./ui/input"
 
 export default function Exam({ examData, terms }: { examData: any, terms: Record<string, Array<any>> }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [date, setDate] = useState<Date>()
+
+    console.log(examData.idexamSubject, terms)
 
     return <div onClick={() => { console.log(examData, terms[examData.idexamSubject]) }}>
         <div className="px-5 py-4 w-full md:w-[500px] flex justify-between">
@@ -39,12 +47,55 @@ export default function Exam({ examData, terms }: { examData: any, terms: Record
                             <DialogDescription>
                                 Izaberi termn ispita, ili ga unesi ručno.
                             </DialogDescription>
-                            <Label>Ponudjeni termini: </Label>
-                            Nema ponudjenjih termina
+                            <Label>Ponudjeni: </Label>
+                            <div className="flex flex-wrap gap-3">
+                                {Object.keys(terms).length != 0 && terms[examData.idexamSubject].map((term) => {
+                                    return (
+                                        <Badge variant={"secondary"} className="flex gap-2 bg-muted items-center mb-2 cursor-pointer">
+                                            <span>{new Date(term.datum).toLocaleDateString()}</span>
+                                            <span>{term.od} - {term.do}</span>
+                                        </Badge>
+                                    )
+                                })}
+                            </div>
+                            <Label>Termin: </Label>
+                            <div className="w-full flex flex-row gap-2">
+                                <div className="flex flex-col gap-3">
+                                    <Label className="">Date</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                            variant="outline"
+                                            data-empty={!date}
+                                            className="data-[empty=true]:text-muted-foreground justify-start text-left font-normal"
+                                            >
+                                            <CalendarIcon />
+                                            {date ? format(date, "PPP") : <span>Podesi datum</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                            <Calendar mode="single" selected={date} onSelect={setDate} />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="flex flex-col gap-3">
+                                    <Label htmlFor="time-picker" className="px-1">
+                                        Time
+                                    </Label>
+                                    <Input
+                                        type="time"
+                                        id="time-picker"
+                                        step="1"
+                                        defaultValue="10:30:00"
+                                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"/>
+                                </div>
+                            </div>  
+                            <div className="w-full flex flex-col justify-end items-end">
+                                <Button>Sačuvaj</Button>
+                            </div>
                         </DialogContent>
                     </Dialog>
-                </div>
-                }
+                </div>}
             </div>
         </div>
     </div>

@@ -72,7 +72,7 @@ export const columns: ColumnDef<Exam>[] = [
                 <ArrowUpDown/>
             </Button>,
         cell: ({ row }) => (
-            <div className="w-full max-w-full overflow-x-scroll">{row.getValue("subjectName")}</div>
+            <div className="w-full max-w-full">{row.getValue("subjectName")}</div>
         ),
     },
     {

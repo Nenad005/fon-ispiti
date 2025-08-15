@@ -65,9 +65,9 @@ export default function Exam({ examData, terms }: { examData: any, terms: Record
                             </DialogDescription>
                             <Label>Ponudjeni: </Label>
                             <div className="flex flex-wrap gap-3">
-                                {Object.keys(terms).length != 0 && terms[examData.idexamSubject].map((term) => {
+                                {Object.keys(terms).length != 0 && terms[examData.idexamSubject].map((term, index) => {
                                     return (
-                                        <Badge className="flex gap-2 bg-pink-400 items-center mb-2 cursor-pointer" onClick={() => handleSelectTerm(term)}>
+                                        <Badge key={`termin-${index}`} className="flex gap-2 bg-pink-400 items-center mb-2 cursor-pointer" onClick={() => handleSelectTerm(term)}>
                                             <span className="text-secondary">{new Date(term.datum).toLocaleDateString()}</span>
                                             <span className="text-secondary">{term.od} - {term.do}</span>
                                         </Badge>

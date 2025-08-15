@@ -8,9 +8,10 @@ import { useEffect } from "react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
+import { getBaseUrl } from "@/lib/utils";
 
 async function getPeriods() {
-  const response = await fetch("/api/data/terms");
+  const response = await fetch(`${getBaseUrl()}/api/data/terms`);
   if (!response.ok) {
     throw new Error("Failed to fetch terms");
   }

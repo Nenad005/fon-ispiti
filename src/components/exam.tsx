@@ -14,8 +14,24 @@ import { Input } from "./ui/input"
 export default function Exam({ examData, terms }: { examData: any, terms: Record<string, Array<any>> }) {
     const [isOpen, setIsOpen] = useState(false);
     const [date, setDate] = useState<Date>()
+    const [fromTime, setFromTime] = useState("08:00");
+    const [toTime, setToTime] = useState("08:30");
 
-    console.log(examData.idexamSubject, terms)
+    function handleFromTimeChange(e: any){
+        setFromTime(e.target.value);
+    }
+    function handleToTimeChange(e: any){
+        setToTime(e.target.value);
+    }
+
+    // console.log(examData.idexamSubject, terms)
+
+    function handleSelectTerm(term: any){
+        console.log(term)
+        setFromTime(term.od)
+        setToTime(term.do)
+        setDate(new Date(term.datum))
+    }
 
     return <div onClick={() => { console.log(examData, terms[examData.idexamSubject]) }}>
         <div className="px-5 py-4 w-full md:w-[500px] flex justify-between">
@@ -51,9 +67,9 @@ export default function Exam({ examData, terms }: { examData: any, terms: Record
                             <div className="flex flex-wrap gap-3">
                                 {Object.keys(terms).length != 0 && terms[examData.idexamSubject].map((term) => {
                                     return (
-                                        <Badge variant={"secondary"} className="flex gap-2 bg-muted items-center mb-2 cursor-pointer">
-                                            <span>{new Date(term.datum).toLocaleDateString()}</span>
-                                            <span>{term.od} - {term.do}</span>
+                                        <Badge className="flex gap-2 bg-pink-400 items-center mb-2 cursor-pointer" onClick={() => handleSelectTerm(term)}>
+                                            <span className="text-secondary">{new Date(term.datum).toLocaleDateString()}</span>
+                                            <span className="text-secondary">{term.od} - {term.do}</span>
                                         </Badge>
                                     )
                                 })}
@@ -61,7 +77,7 @@ export default function Exam({ examData, terms }: { examData: any, terms: Record
                             <Label>Termin: </Label>
                             <div className="w-full flex flex-row gap-2">
                                 <div className="flex flex-col gap-3">
-                                    <Label className="">Date</Label>
+                                    <Label className="">Datum</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
@@ -80,14 +96,29 @@ export default function Exam({ examData, terms }: { examData: any, terms: Record
                                 </div>
                                 <div className="flex flex-col gap-3">
                                     <Label htmlFor="time-picker" className="px-1">
-                                        Time
+                                        Od
                                     </Label>
                                     <Input
                                         type="time"
-                                        id="time-picker"
-                                        step="1"
-                                        defaultValue="10:30:00"
-                                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"/>
+                                        min={"00:00"}
+                                        max={"23:59"}
+                                        value={fromTime}
+                                        onChange={handleFromTimeChange}
+                                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                        />
+                                </div>
+                                <div className="flex flex-col gap-3">
+                                    <Label htmlFor="time-picker" className="px-1">
+                                        Do
+                                    </Label>
+                                    <Input
+                                        type="time"
+                                        min={"00:00"}
+                                        max={"23:59"}
+                                        value={toTime}
+                                        onChange={handleToTimeChange}
+                                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                        />
                                 </div>
                             </div>  
                             <div className="w-full flex flex-col justify-end items-end">

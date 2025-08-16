@@ -48,17 +48,22 @@ export default function AddButton() {
         setIsOpen(false)
     }
 
-    function handleAddExams(){
+    function handleAddExams() {
         const newExams = selectedExams.map((exam) => {
+            const existingCount = exams.filter(e => e.idexamSubject.startsWith(exam.idexamSubject)).length;
+            
             return {
                 ...exam,
-                term: null
-            }
-        })
-        window.localStorage.setItem('EXAMS', JSON.stringify(exams.concat(newExams)))
-        setExams(exams.concat(newExams))
+                term: null,
+                id: `${exam.idexamSubject}--${existingCount + 1}`,
+            };
+        });
+
+        const updatedExams = exams.concat(newExams);
+        window.localStorage.setItem('EXAMS', JSON.stringify(updatedExams));
+        setExams(updatedExams);
         handleSaveSettings();
-        setIsOpen(false)
+        setIsOpen(false);
     }
 
     function handleOpenChange(open: any){

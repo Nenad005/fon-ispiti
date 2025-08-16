@@ -9,6 +9,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from 
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { getBaseUrl } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 async function getPeriods() {
   const response = await fetch(`${getBaseUrl()}/api/data/terms`);
@@ -60,10 +61,9 @@ export default function Home() {
     examsDict[type][semester][period].push(exam)
   }
 
-  console.log(examsDict)
-
   return (
     <div className="w-full h-full md:w-[500px] flex justify-start items-start p-5 flex-col gap-2">
+      {/* <Button onClick={()=> {console.log(exams, data)}}>ISPISI</Button> */}
       {Object.keys(examsDict).map((type) => <div key={`${type}-cont`}>
         {/* <h1 key={`${type}-h1`}>{type}</h1> */}
         <div key={`${type}-div`} >
@@ -82,7 +82,7 @@ export default function Home() {
                 </Badge>
                 <div key={`${type}-${semester}-${period}-div`} className="flex flex-col">
                   {examsDict[type][semester][period].map((exam: any, i: number) => 
-                    <Exam key={`${exam.idexamSubject}-${i}`} examData={exam} terms={ isPending ? {} : isError ? {} : data ? data : {}} />
+                    <Exam key={`${exam.idexamSubject}-${i}-${exams.length}`} examData={exam} terms={ isPending ? {} : isError ? {} : data ? data : {}} />
                   )}
                 </div>
               </div>)}
@@ -90,11 +90,6 @@ export default function Home() {
           </div>)}
         </div>
       </div>)}
-      {/* <div className="flex flex-col gap-4">
-        {exams.map((exam: any, i: number) => (
-          <Exam key={`${exam.idexamSubject}-${i}`} examData={exam} />
-        ))}
-      </div> */}
     </div>
   );
 }

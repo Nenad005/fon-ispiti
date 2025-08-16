@@ -45,9 +45,29 @@ export default function Home() {
     } 
   }, [])
 
+  let sortedExams = [...exams]
+  sortedExams.sort((a, b) => {
+    if (a.term && b.term) {
+      const dateA = new Date(a.term.datum);
+      const dateB = new Date(b.term.datum);
+      if (dateA < dateB) return -1;
+      if (dateA > dateB) return 1;
+    } else if (a.term) {
+      return -1;
+    } else if (b.term) {
+      return 1;
+    }
+
+    const subjectCompare = a.subjectName.localeCompare(b.subjectName);
+    if (subjectCompare !== 0) return subjectCompare;
+
+    return a.type.localeCompare(b.type);
+  });
+
+
   const examsDict: Record<any, any> = {}
-  for (let i = 0; i < exams.length; i++){
-    const exam = exams[i]
+  for (let i = 0; i < sortedExams.length; i++){
+    const exam = sortedExams[i]
 
     const idElements = exam.examPeriodId.split("--")
     const type = idElements[0]
@@ -62,11 +82,11 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full h-full md:w-[500px] flex justify-start items-start p-5 flex-col gap-2">
+    <div className="w-full h-full flex justify-start items-center p-5 flex-col gap-2">
       {/* <Button onClick={()=> {console.log(exams, data)}}>ISPISI</Button> */}
-      {Object.keys(examsDict).map((type) => <div key={`${type}-cont`}>
+      {Object.keys(examsDict).map((type) => <div key={`${type}-cont`} className="md:w-auto w-full">
         {/* <h1 key={`${type}-h1`}>{type}</h1> */}
-        <div key={`${type}-div`} >
+        <div key={`${type}-div`}>
           {Object.keys(examsDict[type]).map((semester) => <div className="" key={`${type}-${semester}-cont`}>
             {/* <h1 key={`${type}-${semester}-h1`}>{semester}</h1> */}
             <div key={`${type}-${semester}-div`}>

@@ -73,9 +73,9 @@
         }, [])
 
         return <div onClick={() => {console.log(examData)}}>
-            <div className="px-5 py-4 w-full md:w-[500px] flex justify-between">
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-3">
+            <div className="px-5 py-4 w-full md:max-w-[500px] flex justify-between">
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex items-center gap-3 w-full">
                         <div className={`text-right w-5 h-5 font-semibold text-secondary rounded-[50%] flex items-center justify-center
                             ${examData.type == "P" ? "bg-green-400" 
                             : examData.type == "U" ? "bg-blue-400"
@@ -83,7 +83,7 @@
                         >
                             {examData.type}
                         </div>
-                        <h1 className="text-xl">{examData.subjectName}</h1>
+                        <h1 className="text-xl mr-auto">{examData.subjectName}</h1>
                         {examData.term && 
                         <Button variant={"secondary"} 
                             className="size-6! p-0! cursor-pointer"
